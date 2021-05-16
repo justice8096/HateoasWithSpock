@@ -3,7 +3,6 @@ package com.example.demo.repository;
 import java.util.List;
 
 import com.example.demo.dto.DoctorDto;
-import com.example.demo.dto.PatientDto;
 
 /**
  * @author Taimoor Choudhary

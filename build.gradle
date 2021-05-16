@@ -21,13 +21,16 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-	annotationProcessor 'org.projectlombok:lombok'
+	compile "org.springframework.boot:spring-boot-devtools"
+	compile "org.springframework.boot:spring-boot-starter-web"
 	compile "org.codehaus.groovy:groovy:3.0.7"
   	testCompile platform("org.spockframework:spock-bom:2.0-M4-groovy-3.0")
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
   	testCompile "org.spockframework:spock-core"
+	testCompile "org.spockframework:spock-spring"
   	testCompile "org.spockframework:spock-junit4"
   	testCompile 'com.jayway.jsonpath:json-path'
+	testCompile 'cglib:cglib-nodep'
 }
 
 test {
