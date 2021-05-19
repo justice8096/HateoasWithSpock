@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Patient;
 import com.example.demo.service.DoctorService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;

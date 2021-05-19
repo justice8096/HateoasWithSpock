@@ -27,8 +27,9 @@ public class DoctorRepositoryEmbedded implements DoctorRepository {
 
         patientDtoList.add(createPatient(1, "J. Smalling"));
         patientDtoList.add(createPatient(2, "Samantha Williams"));
+        DoctorDto doc = createDoctor(id, "Dr. Sanders", "General", patientDtoList);
 
-        return createDoctor(id, "Dr. Sanders", "General", patientDtoList);
+        return doc;
     }
 
     @Override

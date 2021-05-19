@@ -19,8 +19,8 @@ public class DoctorService {
     DoctorRepository doctorRepository;
 
     public Doctor getDoctor(int id){
-
-        return DoctorMapper.toModel(doctorRepository.getDoctorById(id));
+    	Doctor doc = DoctorMapper.toModel(doctorRepository.getDoctorById(id));
+        return doc;
     }
 
     public Doctor getDoctorWithPatients(int id){
