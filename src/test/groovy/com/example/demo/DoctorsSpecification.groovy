@@ -57,72 +57,93 @@ class DoctorsSpecification extends Specification {
 	
 	private static String BASE_PATH = "http://localhost/people";
 	
-	def "Should be passed doctorService"() {
-		expect:
-		 doctorService != null
-	}
-	
 	@Unroll
 	def "Should return ok for doctors wthout parameters"() {
 		
 		//given:
 		//	mockMvc = webAppContextSetup(webApplicationContext).build();
-		when:
+		when: "access the doctors link on the server"
 			def results=mockMvc.perform(get('/doctors').accept(APPLICATION_JSON))
 		
-		then:
+		then: "check if the status is ok"
 			results.andExpect(status().isOk())
 	}
 	
 	@Unroll
-	def "Should return one link to '/doctors' only for empty doctors list"() {
+	def "Should return the link to get doctors for an empty doctors list"() {
 		
 		//given:
 		//	mockMvc = webAppContextSetup(webApplicationContext).build();
-		when:
+		when: "get the response from accessing the doctors link"
 			def jsonContent=((mockMvc.perform(get('/doctors').contentType(APPLICATION_JSON))).andReturn().response).getContentAsString()
 			//Doing this because Jayway throws an exception if it doesn't find the link, so the tests look cleaner
 			//if the exception is handled
 			
-		then:
+		then: "make sure the link for self exists"
 			def self = Arrays.toString(JsonPath.read(jsonContent, "_links.self.href"))
 			noExceptionThrown()
-		and:
-			self.contains("http://localhost/doctors")
+		and: "it contains the right link"
+			Arrays.toString(JsonPath.read(jsonContent, "_links.self.href")).contains("http://localhost/doctors")
 	}
 	
 	@Unroll
-	def "Should return two links to '/doctors' for doctor one"() {
+	def "Should return links for patients, doctors and self for the doctor"() {
 		//technically I could combine the doctors test and the patients test for the links, because spock is going 
 		//to give me better diagnostics. But I'd like to reuse this later, 
 
-		when:
+		when: "get the response from accessing the link for the first doctor"
 			def jsonContent=((mockMvc.perform(get('/doctors/1').contentType(APPLICATION_JSON))).andReturn().response).getContentAsString()
 		
-		then:
-			def doctors = Arrays.toString(JsonPath.read(jsonContent, "_links.self[1].href"))
-			def self = Arrays.toString(JsonPath.read(jsonContent, "_links.self[0].href"))
+		then: "check that there is a list for patients of the doctor"
+			Arrays.toString(JsonPath.read(jsonContent, "_links.patientList.href")).contains("http://localhost/doctors/1/patients")
+		and: "check that there is a link for the doctor"
+			Arrays.toString(JsonPath.read(jsonContent, "_links.self[0].href")).contains("http://localhost/doctors/1")
+		and: "check that there is a link for gettting all of the doctors"
+			Arrays.toString(JsonPath.read(jsonContent, "_links.self[1].href").contains("http://localhost/doctors"))
+		and: "no exceptions are thrown"
 			noExceptionThrown()
-		and:
-			self.contains("http://localhost/doctors/1/patients")
-		and:
-			doctors.contains("http://localhost/doctors")
 	}
 	
 	@Unroll
-	def "Should return two links to '/patients' for doctor one"() {
+	def "Should return links to the doctor's patients"() {
 		
-		when:
+		when: "get the links from a doctor's page"
 			def jsonContent=((mockMvc.perform(get('/doctors/1').contentType(APPLICATION_JSON))).andReturn().response).getContentAsString()
 			
-		then:
-			def patient1 = Arrays.toString(JsonPath.read(jsonContent, "patientList.0._links.self.href"))
-			def patient2 = Arrays.toString(JsonPath.read(jsonContent, "patientList.1._links.self.href"))
+		then: "check that the link for the first patient's record is good"
+			Arrays.toString(JsonPath.read(jsonContent, "patientList[0]_links.self.href")).contains("http://localhost/patients/1")
+		and: "check that the link for the second patient's record is good"
+			Arrays.toString(JsonPath.read(jsonContent, "patientList[1]_links.self.href")).contains("http://localhost/patients/2")
+		and: "no exceptions are thrown"
 			noExceptionThrown()
+	}
+	
+	@Unroll
+	def "Should return the name and specialty of a doctor"() {
+		
+		when: "get the links from a doctor's page"
+			def jsonContent=((mockMvc.perform(get('/doctors/1').contentType(APPLICATION_JSON))).andReturn().response).getContentAsString()
+			
+		then:"check that the doctor's name is correct"
+			Arrays.toString(JsonPath.read(jsonContent, "name")).contains("Dr. Sanders")
+		and: "check that the doctor's speciality is correct"
+			Arrays.toString(JsonPath.read(jsonContent, "speciality")).contains("General")
+		and: "no exceptions are thrown"
+			noExceptionThrown()
+	}
+	
+	@Unroll
+	def "Should return the name of each patient for a doctor"() {
+		
+		when: "get the links from a doctor's page"
+			def jsonContent=((mockMvc.perform(get('/doctors/1').contentType(APPLICATION_JSON))).andReturn().response).getContentAsString()
+			
+		then: "check that the name of the first patient is correct"
+			Arrays.toString(JsonPath.read(jsonContent, "patientList[0]name")).contains("J. Smalling")
+		and: "check that the name of the second patient is correct"
+			Arrays.toString(JsonPath.read(jsonContent, "patientList[1]name")).contains("Samantha Williams")
 		and:
-			patient1.contains("http://localhost/patients/1")
-		and:
-			patient2.contains("http://localhost/patients/2")
+			noExceptionThrown()
 	}
 	
 	@TestConfiguration                                          
